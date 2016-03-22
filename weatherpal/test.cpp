@@ -5,6 +5,8 @@
 #include "historicaldata.h"
 #include "date.h" 
 #include "contract.h"
+#include "algorithm.h"
+#include <algorithm>
 
 void RiskClaculator()
 {
@@ -14,7 +16,7 @@ void RiskClaculator()
 	std::map<std::string, std::vector<SimpleHistoricalRecordUnit> > historicalRecord;
 	std::vector<ClassicalTouristPrecipitationContract> contractSeries;
 
-	Date today(2015, 3, 14);
+	Date today(2015, 2, 2);
 
 	for (auto i = 0; i < a.size(); ++i)
 	{
@@ -32,6 +34,7 @@ void RiskClaculator()
 					SimpleRecordFile sRF(path[j]);
 					std::pair<std::string, std::vector<SimpleHistoricalRecordUnit> > sRF2Pair(path[j], sRF.GetSimpleRecordFileData());
 					historicalRecord.insert(sRF2Pair);
+
 				}
 			}
 		}
@@ -74,3 +77,26 @@ void RiskClaculator()
 
 	
 };
+
+void PriceCalculator()
+{
+	Date beginDate(2016, 7, 8);
+	//AgriculturalContinualContracts contract(beginDate, 30, "Jiuquan", 10, Precipitation);
+	AgriculturalAllInContracts contract(beginDate, 60, "Jiuquan", 10, Precipitation);
+	contract.SetMode(PriceMode);
+	SimpleRecordFile sRF("Jiuquan");
+	
+	std::vector<double> result = contract.MultiCalculator(sRF);
+
+
+	//std::qsort(&result, result.size(), sizeof(result[0]), compare);
+	std::sort(result.begin(), result.end());
+	for (auto i = 0; i < result.size(); ++i)
+	{
+		std::cout << result[i] << " " << (i+1)/(double)result.size() << "\n" ;
+	}
+
+	std::cout << std::endl;
+
+	return;
+}

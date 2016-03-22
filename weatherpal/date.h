@@ -29,7 +29,7 @@ public:
 	Date&			operator++();
 	Date			operator++(int);
 	bool			operator<(Date date) const;
-	bool			operator=(Date date) const;
+	bool			operator==(Date date) const;
 	
 	void			ShiftDays(unsigned int day);
 

@@ -61,12 +61,15 @@ void SimpleHistoricalRecordUnit::SetDate(const Date & date)
 };
 
 
-SimpleHistoricalRecordUnit::SimpleHistoricalRecordUnit(std::vector<std::string> record):
-	m_date(std::stoul(record[0], nullptr, 0), std::stoul(record[1], nullptr, 0), std::stoul(record[2], nullptr, 0)),
-	m_precipitationFrom20OClockTo20OClock(std::stoul(record[3], nullptr, 0)),
-	m_dailyMaximunTempreture(std::stoul(record[4], nullptr, 0)),
-	m_dailyMinimunTempreture(std::stoul(record[5], nullptr, 0))
-{};
+SimpleHistoricalRecordUnit::SimpleHistoricalRecordUnit(std::vector<std::string> record) :
+	m_date(std::stoul(record[0], nullptr, 0), std::stoul(record[1], nullptr, 0), std::stoul(record[2], nullptr, 0))
+{
+	m_record.push_back(std::stoul(record[3], nullptr, 0));
+	m_record.push_back(std::stoul(record[4], nullptr, 0));
+	m_record.push_back(std::stoul(record[5], nullptr, 0));
+	//m_record[1] = std::stoul(record[4], nullptr, 0);
+	//m_record[2] = std::stoul(record[5], nullptr, 0);
+};
 
 
 unsigned int SimpleHistoricalRecordUnit::GetYear() const
@@ -99,35 +102,41 @@ void SimpleHistoricalRecordUnit::SetDay(const unsigned int & day)
 	return;
 };
 
-unsigned int SimpleHistoricalRecordUnit::GetPrecipitationFrom20OClockTo20OClock() const
+double SimpleHistoricalRecordUnit::GetPrecipitationFrom20OClockTo20OClock() const
 {
-	return m_precipitationFrom20OClockTo20OClock;
+	return m_record[0];
 };
-void SimpleHistoricalRecordUnit::SetPrecipitationFrom20OClockTo20OClock(const unsigned int & precipitationFrom20OClockTo20OClock)
+void SimpleHistoricalRecordUnit::SetPrecipitationFrom20OClockTo20OClock(const double & precipitationFrom20OClockTo20OClock)
 {
-	m_precipitationFrom20OClockTo20OClock = precipitationFrom20OClockTo20OClock;
+	m_record[0] = precipitationFrom20OClockTo20OClock;
 	return;
 };
 
-int SimpleHistoricalRecordUnit::GetDailyMaximunTempreture() const
+double SimpleHistoricalRecordUnit::GetDailyMaximunTempreture() const
 {
-	return m_dailyMaximunTempreture;
+	return m_record[1];
 };
-void SimpleHistoricalRecordUnit::SetDailyMaximunTempreture(const int & dailyMaximunTempreture)
+void SimpleHistoricalRecordUnit::SetDailyMaximunTempreture(const double & dailyMaximunTempreture)
 {
-	m_dailyMaximunTempreture = dailyMaximunTempreture;
+	m_record[1] = dailyMaximunTempreture;
 	return;
 };
 
-int SimpleHistoricalRecordUnit::GetDailyMinimunTempreture() const
+double SimpleHistoricalRecordUnit::GetDailyMinimunTempreture() const
 {
-	return m_dailyMinimunTempreture;
+	return m_record[2];
 };
-void SimpleHistoricalRecordUnit::SetDailyMinimunTempreture(const int & dailyMinimunTempreture)
+void SimpleHistoricalRecordUnit::SetDailyMinimunTempreture(const double & dailyMinimunTempreture)
 {
-	m_dailyMinimunTempreture = dailyMinimunTempreture;
+	m_record[2] = dailyMinimunTempreture;
 	return;
 };
+
+std::vector<double> SimpleHistoricalRecordUnit::GetRecord() const
+{
+	return m_record;
+};
+
 
 /*
 SimpleHistoricalRecord::SimpleHistoricalRecord(std::string cityName):

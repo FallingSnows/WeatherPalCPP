@@ -3,7 +3,7 @@
 
 int main()
 {
-	RiskClaculator();
+	PriceCalculator();
 	
 	getchar();
 	return 0;

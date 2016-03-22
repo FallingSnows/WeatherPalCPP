@@ -49,7 +49,7 @@ void Date::AddOneDay()
 
 void Date::display()
 {
-	std::cout << m_year << "-" << m_month << "-" << m_day << std::endl;
+	std::cout << m_year << "-" << m_month << "-" << m_day << " ";
 	return;
 };
 
@@ -129,7 +129,7 @@ bool Date::operator<(Date date) const
 		return false;
 	}
 };
-bool Date::operator=(Date date) const
+bool Date::operator==(Date date) const
 {
 	if (m_year == date.GetYear() & m_month == date.GetMonth() & m_day == date.GetDay())
 	{

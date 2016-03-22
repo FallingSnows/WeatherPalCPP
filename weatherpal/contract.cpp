@@ -2,6 +2,7 @@
 
 #include "contract.h"
 #include "historicaldata.h"
+#include "algorithm.h"
 
 Contract::Contract(std::vector<std::string> clientRecord)
 {
@@ -18,9 +19,12 @@ Contract::Contract(std::vector<std::string> clientRecord)
 	m_protectedBeginDay = std::stoul(clientRecord[5], nullptr, 0);
 
 	std::size_t i = 6;
-	while (i != clientRecord.size() & clientRecord[i] != "")
+	while (i != clientRecord.size())
 	{
-		m_protectedDestination.push_back(clientRecord[i]);
+		if (clientRecord[i] != "")
+		{
+			m_protectedDestination.push_back(clientRecord[i]);
+		}
 		i++;
 	}
 		
@@ -148,4 +152,156 @@ unsigned int ClassicalTouristPrecipitationContract::ProtectedDayNumberToStrikeDa
 		std::cout << "the protected period is too long for this contract!" << std::endl;
 		return 0;
 	}
+};
+
+
+AgriculturalContracts::AgriculturalContracts(Date  pretectionBeginDate, unsigned int protectedDays, std::string protectedLocation, double price, IndiceType indiceType) :
+	m_pretectionBeginDate(pretectionBeginDate), m_protectedDays(protectedDays), m_protectedLocation(protectedLocation), m_price(price), m_indiceType(indiceType)
+{};
+//getter and setter of Agricultural Contracts
+Date AgriculturalContracts::GetProtectionBeginDate() const
+{
+	return m_pretectionBeginDate;
+};
+void AgriculturalContracts::SetProtectionBeginDate(Date pretectionBeginDate)
+{
+	m_pretectionBeginDate = pretectionBeginDate;
+	return;
+};
+unsigned int AgriculturalContracts::GetProtectedDays() const
+{
+	return m_protectedDays;
+};
+void AgriculturalContracts::SetProtectedDays(unsigned int protectedDays)
+{
+	m_protectedDays = protectedDays;
+	return;
+};
+
+std::string AgriculturalContracts::GetProtectedLocation() const
+{
+	return m_protectedLocation;
+};
+void AgriculturalContracts::SetProtectedLocation(std::string location)
+{
+	m_protectedLocation = location;
+	return;
+};
+
+
+void AgriculturalContinualContracts::SetMode(Mode m)
+{
+	m_mode = m;
+	return;
+};
+
+void AgriculturalContinualContracts::SetContinualDays(unsigned int d)
+{
+	m_continualDays = d;
+	return;
+};
+
+
+std::vector<double> AgriculturalContinualContracts::MultiCalculator(SimpleRecordFile& sRF) const
+{
+	std::vector<double> result(20);
+	std::vector<SimpleHistoricalRecordUnit> historicalData = sRF.GetSimpleRecordFileData();
+	Date beginDate = m_pretectionBeginDate;
+	Date endDate = m_pretectionBeginDate;
+	endDate.ShiftDays(m_protectedDays - m_continualDays + 1);
+	std::vector<double> bigWindows;
+	std::vector<double> smallWindows(m_continualDays, 9999);
+	if (m_mode == PriceMode)
+	{
+		std::size_t index = 0;
+		for (auto ite = historicalData.begin(); ite != historicalData.end(); ++ite)
+		{
+			if (ite->GetYear() > 1995)
+			{
+				beginDate.SetYear(ite->GetYear());
+				endDate.SetYear(ite->GetYear());
+				
+				if(((beginDate < ite->GetDate()) || (beginDate == ite->GetDate()))  & ((ite->GetDate() < endDate) || (ite->GetDate() == endDate)))
+				{
+					index++;
+					std::vector<double> record = ite->GetRecord();
+					double temp = record[m_indiceType - 4];
+					smallWindows[index%m_continualDays] = temp;
+					if (index > 1)
+					{
+						bigWindows.push_back(FindMinOfAVector(smallWindows));
+					}
+				}
+
+				if (ite->GetDate() == endDate)
+				{
+					result[ite->GetYear() - 1996] = FindMaxOfAVector(bigWindows);
+					bigWindows.clear();
+				}
+
+			}
+		}
+		
+	}
+	else
+	{
+
+	}
+
+	
+
+	return result;
+};
+
+
+
+void AgriculturalAllInContracts::SetMode(Mode m)
+{
+	m_mode = m;
+	return;
+};
+
+std::vector<double> AgriculturalAllInContracts::MultiCalculator(SimpleRecordFile& sRF) const
+{
+	std::vector<double> result(20);
+	std::vector<SimpleHistoricalRecordUnit> historicalData = sRF.GetSimpleRecordFileData();
+	Date beginDate = m_pretectionBeginDate;
+	Date endDate = m_pretectionBeginDate;
+	endDate.ShiftDays(m_protectedDays - 1);
+	double  partSum = 0;
+	if (m_mode == PriceMode)
+	{
+		std::size_t index = 0;
+		for (auto ite = historicalData.begin(); ite != historicalData.end(); ++ite)
+		{
+			if (ite->GetYear() > 1995)
+			{
+				beginDate.SetYear(ite->GetYear());
+				endDate.SetYear(ite->GetYear());
+
+				if (((beginDate < ite->GetDate()) || (beginDate == ite->GetDate()))  & ((ite->GetDate() < endDate) || (ite->GetDate() == endDate)))
+				{
+					std::vector<double> record = ite->GetRecord();
+					double temp = record[m_indiceType - 4];
+					partSum += temp;
+				}
+
+				if (ite->GetDate() == endDate)
+				{
+					result[ite->GetYear() - 1996] = partSum;
+					partSum = 0;
+				}
+
+			}
+		}
+
+	}
+	else
+	{
+
+	}
+
+
+
+	return result;
 };

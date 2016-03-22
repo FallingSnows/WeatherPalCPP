@@ -11,8 +11,17 @@
 
 enum IndiceType
 {
-	Precipitation = 4
+	Precipitation = 4,
+	HighTemperature = 5,
+	LowTemperature = 6
 };
+
+enum Mode
+{
+	PriceMode = 0,
+	RiskMode = 1
+};
+
 
 class Contract
 {
@@ -61,5 +70,50 @@ class HignTempretureContract: public Contract
 
 
 };
+
+class AgriculturalContracts
+{
+protected:
+	Date							m_pretectionBeginDate;
+	unsigned int					m_protectedDays;
+	std::string						m_protectedLocation;
+	double							m_price;
+	IndiceType						m_indiceType;
+
+public:
+	AgriculturalContracts(Date pretectionBeginDate, unsigned int protectedDays, std::string protectedLocation, double price, IndiceType indiceType);
+	//getter and setter
+	Date GetProtectionBeginDate() const;
+	void SetProtectionBeginDate(Date);
+	unsigned int GetProtectedDays() const;
+	void SetProtectedDays(unsigned int);
+	std::string GetProtectedLocation() const;
+	void SetProtectedLocation(std::string location);
+};
+
+class AgriculturalContinualContracts :public AgriculturalContracts
+{
+	Mode							m_mode;
+	double							m_strike;
+	unsigned int					m_continualDays;
+public:
+	AgriculturalContinualContracts(Date pretectionBeginDate, unsigned int protectedDays, std::string protectedLocation, double price, IndiceType indiceType) : AgriculturalContracts(pretectionBeginDate, protectedDays, protectedLocation, price, indiceType) {};
+
+	void SetMode(Mode m);
+	void SetContinualDays(unsigned int d);
+	std::vector<double> MultiCalculator(SimpleRecordFile& sRF) const;
+};
+
+class AgriculturalAllInContracts :public AgriculturalContracts
+{
+	Mode							m_mode;
+	double							m_strike;
+public:
+	AgriculturalAllInContracts(Date pretectionBeginDate, unsigned int protectedDays, std::string protectedLocation, double price, IndiceType indiceType) : AgriculturalContracts(pretectionBeginDate, protectedDays, protectedLocation, price, indiceType) {};
+
+	void SetMode(Mode m);
+	std::vector<double> MultiCalculator(SimpleRecordFile& sRF) const;
+};
+
 
 #endif
